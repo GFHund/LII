@@ -6,7 +6,8 @@
  bool VIIApp::OnInit()
  {
 	wxXmlResource::Get()->InitAllHandlers();
-	wxXmlResource::Get()->Load("mainGui.xrc");
+	//wxXmlResource::Get()->Load("mainGui.xrc");
+	wxXmlResource::Get()->LoadAllFiles("xrc");
 	
 	VIIFrame *frame = new VIIFrame( "Hello World", wxPoint(50, 50), wxSize(1024, 768) );
 	frame->Show(true);

@@ -3,51 +3,67 @@
 VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 {
 	wxXmlResource::Get()->LoadFrame(this,NULL,"VIIFrame");
+	//menubar = wxXmlResource::Get()->LoadMenuBar("m_menubar1");
 	
-	wxPanel* panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(600,600));
+	wxPanel* panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(700,600));
 	
 	int args[] = {WX_GL_RGBA,WX_GL_DOUBLEBUFFER,WX_GL_DEPTH_SIZE,16,0};
 	//viiCanvas = new VIICanvas(this,args,1945,wxSize(500,500));
 	mViiCanvas = new VIICanvas(panel,args,1945,wxSize(500,500));
 	
 	wxBoxSizer* boxSizer = new wxBoxSizer(wxHORIZONTAL);
+	//wxBoxSizer* verticalSizer = new wxBoxSizer(wxVERTICAL);
 	//boxSizer->Add(viiCanvas,1,wxEXPAND);
-	boxSizer->Add(mViiCanvas);
+	
 	
 	this->mListBox = new wxListBox(panel,2000,wxDefaultPosition,wxSize(100,100));
 	//wxListBox* listBox = new wxListBox(this,2000,wxDefaultPosition,wxSize(100,100));
 	//boxSizer->Add(listBox,0,wxALIGN_RIGHT);
+	
+	legende = new colorLegend(panel,2001,0,10,Vector3(0,0,0),Vector3(1,0,0),wxDefaultPosition,wxSize(100,500));
+	
 	wxString noneItem("none");
 	mListBox->InsertItems(1,&noneItem,0);
 	
+	boxSizer->Add(mViiCanvas);
+	boxSizer->Add(legende);
 	boxSizer->Add(mListBox);
+	
 	
 	SetSizerAndFit(boxSizer);
 	
+	wxStatusBar* statusBar = CreateStatusBar();
+	//SetStatusText("Wilkommen VII");
+	processBar = new wxGauge(statusBar,wxID_ANY,100);
 }
 
 
- void VIIFrame::quitProgram()
- {
-	//Close(true);
-	Destroy();
- }
+void VIIFrame::quitProgram()
+{
+	Close(true);
+	//Destroy();
+}
+
+void setLegend(float minValue,float maxValue,Vector3 minColor,Vector3 maxColor)
+{
+	
+}
  
- void VIIFrame::OnExit(wxCommandEvent& event)
- {
+void VIIFrame::OnExit(wxCommandEvent& event)
+{
 	//Close( true );
 	std::cout << "Exit Program" << std::endl;
 	quitProgram();
- }
+}
  
- void VIIFrame::OnAbout(wxCommandEvent& event)
- {
+void VIIFrame::OnAbout(wxCommandEvent& event)
+{
 	 wxMessageBox( "This is a wxWidgets' Hello world sample",
 				   "About Hello World", wxOK | wxICON_INFORMATION );
- }
+}
  
- void VIIFrame::OnOpen(wxCommandEvent& event)
- {
+void VIIFrame::OnOpen(wxCommandEvent& event)
+{
 	//wxLogMessage("Hello world from wxWidgets!");
 	
 	wxFileDialog openFileDialog(this,_("Open Mesh file"),"","","Mesh files (*.ply;*.obj)|*.ply;*.obj",
@@ -69,7 +85,7 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	MeshManager* manager = MeshManager::getSingleton();
 	manager->addMesh(mesh);
 	Refresh();
- }
+}
  /*
 	toDo: Button Checked machen oder nicht
  */
@@ -79,6 +95,11 @@ void VIIFrame::TurnEdges(wxCommandEvent& event)
 	on = !on;
 	
 	mViiCanvas->activateEdges(on);
+	bool checked = event.IsChecked();
+	//wxMenuItem* turnEdgesItem = (wxMenuItem*) event.GetEventObject();
+	//wxMenu* turnEdgesItem = (wxMenu*) event.GetEventObject();
+	//turnEdgesItem->Check(on);
+	
 	/*
 	viiCanvas
 	wxWindowList children = GetChildren();
@@ -106,35 +127,53 @@ void VIIFrame::TurnEdges(wxCommandEvent& event)
  
 void VIIFrame::createFlatSurface(wxCommandEvent& event)
 {
+	int numVert = 10;
+
 	MeshManager* manager = MeshManager::getSingleton();
 	
 	std::set<Vertex*> vertices;
 	std::vector<Vertex*> vertices2;//(20*20,0);
 	std::set<Face*> faces;
 	
-	for(int j=-10;j<11;j++)
+	//for(int j=-10;j<11;j++)
+	for(int j=-numVert/2;j<numVert/2+1;j++)
 	{
-		for(int i=-10;i<11;i++)
+		//for(int i=-10;i<11;i++)
+		for(int i=-numVert/2;i<numVert/2+1;i++)
 		{
 			Vertex* vert = new Vertex(Vector3(i,j,0));
-			vert->setIndex((i+10)+(j+10)*20);
+			//vert->setIndex((i+10)+(j+10)*20);
+			vert->setIndex((i+numVert/2)+(j+numVert/2)*numVert);
 			//vertices.insert(vert);
 			//vertices2[(i+10)+(j+10)*20] = vert;
 			vertices2.push_back(vert);
 		}	
 	}
 	
-	for(int i=0;i<20;i++)
+	//for(int i=0;i<20;i++)
+	for(int i=0;i<numVert;i++)
 	{
-		for(int j=0;j<20;j++)
+		//for(int j=0;j<20;j++)
+		for(int j=0;j<numVert;j++)
 		{
-			Vertex* A = vertices2[i+20*j];
-			Vertex* B = vertices2[(i+1)+20*j];
-			Vertex* C = vertices2[(i+1)+20*(j+1)];
-			Vertex* D = vertices2[i+20*(j+1)];
+			Vertex* A = vertices2[i+(numVert+1)*j];//0
+			Vertex* B = vertices2[(i+1)+(numVert+1)*j];//1
+			Vertex* C = vertices2[(i+1)+(numVert+1)*(j+1)];//3
+			Vertex* D = vertices2[i+(numVert+1)*(j+1)];//2
+			//Vertex* A = vertices2[i+20*j];
+			//Vertex* B = vertices2[(i+1)+20*j];
+			//Vertex* C = vertices2[(i+1)+20*(j+1)];
+			//Vertex* D = vertices2[i+20*(j+1)];
+			
+			/*
+			std::cout << "A: "<<A->getPosition() << 
+						"\tB:" << B->getPosition() <<
+						"\tC:" << C->getPosition() <<
+						"\tD:" << D->getPosition() <<std::endl;
+			*/
 			
 			Face* fA = new Face(A,B,C);
-			Face* fB = new Face(A,C,D);
+			Face* fB = new Face(C,A,D);
 			faces.insert(fA);
 			faces.insert(fB);
 		}
@@ -253,11 +292,20 @@ void VIIFrame::OnListItemChanged(wxCommandEvent& event)
 {
 	if(event.IsSelection())
 	{
+		int itemCount = this->mListBox->GetCount();
+		itemCount--;
 		int index = event.GetSelection();
 		wxString text = event.GetString();
 		Mesh* mesh = MeshManager::getSingleton()->getActiveMesh();
-		mesh->setCurMetaDataId(index);
+		mesh->setCurMetaDataId(itemCount - index);
+		Refresh(false);
 	}
+}
+
+void VIIFrame::InLeftDClickLegend(wxMouseEvent& event)
+{
+	wxMessageBox( "This is a wxWidgets' Hello world sample",
+				   "double Click event triggert", wxOK | wxICON_INFORMATION );
 }
 
 void VIIFrame::OnClose(wxCloseEvent& event)
@@ -276,5 +324,6 @@ wxBEGIN_EVENT_TABLE(VIIFrame, wxFrame)
 	EVT_MENU(XRCID("ID_CIRCUMFERENCE"),VIIFrame::circumference)
 	EVT_MENU(XRCID("ID_CALCULATE_VII"),VIIFrame::calculateVII)
 	EVT_LISTBOX(2000,VIIFrame::OnListItemChanged)
-	EVT_CLOSE(VIIFrame::OnClose)
+	//EVT_LEFT_DCLICK(VIIFrame::InLeftDClickLegend)
+	//EVT_CLOSE(VIIFrame::OnClose)
 wxEND_EVENT_TABLE()

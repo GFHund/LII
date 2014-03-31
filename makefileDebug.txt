@@ -1,0 +1,39 @@
+COMPILER = g++
+INCLUDE = -I/usr/local/lib/wx/include/msw-unicode-3.0 -I/usr/local/include/wx-3.0 -D_LARGEFILE_SOURCE=unknown -DWXUSINGDLL -D__WXMSW__
+
+LDFLAG = -lopengl32 -lglu32
+
+WXLIBS = $(shell wx-config --libs) $(shell wx-config --optional-libs gl)
+WXINCLUDE = $(shell wx-config --cxxflags)
+
+OBJECTS =  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/main.o Source/VIICanvas.o \
+		Source/Face.o Source/Vector3.o Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o \
+		Source/VIIFrame.o Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o
+
+debug: $(OBJECTS)
+	$(COMPILER) -g -o VIIDebug $(OBJECTS) $(WXLIBS) $(LDFLAG)
+#$(COMPILER) -oVII $(OBJECTS) $(WXLIBS) $(LDFLAG)	
+	
+Source/main.o: Source/main.cpp
+	$(COMPILER) -c -g -o Source/main.o $(WXINCLUDE) Source/main.cpp
+	
+Source/VIICanvas.o: Source/VIICanvas.h Source/VIICanvas.cpp
+	$(COMPILER) -c -g -o Source/VIICanvas.o $(WXINCLUDE) Source/VIICanvas.cpp 
+	
+Source/VIIFrame.o: Source/VIIFrame.h Source/VIIFrame.cpp
+	$(COMPILER) -c -g -o Source/VIIFrame.o $(WXINCLUDE) Source/VIIFrame.cpp
+	
+Source/colorLegend.o: Source/colorLegend.h Source/colorLegend.cpp
+	$(COMPILER) -c -g -o Source/colorLegend.o $(WXINCLUDE) Source/colorLegend.cpp
+	
+Source/colorChangeEvent.o: Source/colorChangeEvent.h Source/colorChangeEvent.cpp
+	$(COMPILER) -c -g -o Source/colorChangeEvent.o $(WXINCLUDE) Source/colorChangeEvent.cpp
+	
+Source/minMaxColorDlg.o: Source/minMaxColorDlg.h Source/minMaxColorDlg.cpp
+	$(COMPILER) -c -g -o Source/minMaxColorDlg.o $(WXINCLUDE) Source/minMaxColorDlg.cpp
+	
+%.o: %.cpp
+	$(CXX) -g -c $(CXXFLAGS) $< -o $@
+	
+clean:
+	rm -f *.exe Source/*.o

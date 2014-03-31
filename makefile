@@ -18,7 +18,7 @@ WXINCLUDE = $(shell wx-config --cxxflags)
 
 OBJECTS =  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/main.o Source/VIICanvas.o \
 		Source/Face.o Source/Vector3.o Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o \
-		Source/VIIFrame.o
+		Source/VIIFrame.o Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o
 
 #OBJECTS = Source/main.o 
 #Source/VIICanvas.o
@@ -38,6 +38,18 @@ Source/VIICanvas.o: Source/VIICanvas.h Source/VIICanvas.cpp
 	
 Source/VIIFrame.o: Source/VIIFrame.h Source/VIIFrame.cpp
 	$(COMPILER) -c -o Source/VIIFrame.o $(WXINCLUDE) Source/VIIFrame.cpp
+	
+Source/colorLegend.o: Source/colorLegend.h Source/colorLegend.cpp
+	$(COMPILER) -c -o Source/colorLegend.o $(WXINCLUDE) Source/colorLegend.cpp
+	
+Source/colorChangeEvent.o: Source/colorChangeEvent.h Source/colorChangeEvent.cpp
+	$(COMPILER) -c -o Source/colorChangeEvent.o $(WXINCLUDE) Source/colorChangeEvent.cpp
+	
+Source/minMaxColorDlg.o: Source/minMaxColorDlg.h Source/minMaxColorDlg.cpp
+	$(COMPILER) -c -o Source/minMaxColorDlg.o $(WXINCLUDE) Source/minMaxColorDlg.cpp
+	
+
+	
 	
 #alternate: 
 #	$(COMPILER) -oVII.exe Source/main.cpp  $(LDFLAG)
