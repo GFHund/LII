@@ -1,5 +1,6 @@
 #include <wx/panel.h>
 #include <wx/dcclient.h>
+#include <wx/msgdlg.h>
 #include "Vector3.h"
 
 #include "minMaxColorDlg.h"

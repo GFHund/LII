@@ -9,18 +9,20 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	
 	int args[] = {WX_GL_RGBA,WX_GL_DOUBLEBUFFER,WX_GL_DEPTH_SIZE,16,0};
 	//viiCanvas = new VIICanvas(this,args,1945,wxSize(500,500));
-	mViiCanvas = new VIICanvas(panel,args,1945,wxSize(500,500));
+	mViiCanvas = new VIICanvas(panel,args,ID_CANVAS,wxSize(500,500));
 	
 	wxBoxSizer* boxSizer = new wxBoxSizer(wxHORIZONTAL);
 	//wxBoxSizer* verticalSizer = new wxBoxSizer(wxVERTICAL);
 	//boxSizer->Add(viiCanvas,1,wxEXPAND);
 	
 	
-	this->mListBox = new wxListBox(panel,2000,wxDefaultPosition,wxSize(100,100));
+	this->mListBox = new wxListBox(panel,ID_LIST_BOX,wxDefaultPosition,wxSize(100,100));
 	//wxListBox* listBox = new wxListBox(this,2000,wxDefaultPosition,wxSize(100,100));
 	//boxSizer->Add(listBox,0,wxALIGN_RIGHT);
 	
-	legende = new colorLegend(panel,2001,0,10,Vector3(0,0,0),Vector3(1,0,0),wxDefaultPosition,wxSize(100,500));
+	legende = new colorLegend(panel,ID_COLOR_LEGEND,0,10,Vector3(0,0,0),Vector3(1,0,0),wxDefaultPosition,wxSize(100,500));
+	//COLOR_CHANGE_EVT(ID_COLOR_LEGEND,VIIFrame::OnColorChanged)
+	Bind(COLOR_CHANGE_EVT,&VIIFrame::OnColorChanged,this,ID_COLOR_LEGEND);
 	
 	wxString noneItem("none");
 	mListBox->InsertItems(1,&noneItem,0);
@@ -302,6 +304,13 @@ void VIIFrame::OnListItemChanged(wxCommandEvent& event)
 	}
 }
 
+void VIIFrame::OnColorChanged(colorChangeEvent& event)
+{
+	mViiCanvas->setColor(event.getNewMaxColor(),event.getNewMinColor());
+	wxMessageBox( "This is a wxWidgets' Hello world sample",
+				   "double Click event triggert", wxOK | wxICON_INFORMATION );
+}
+
 void VIIFrame::InLeftDClickLegend(wxMouseEvent& event)
 {
 	wxMessageBox( "This is a wxWidgets' Hello world sample",
@@ -323,7 +332,8 @@ wxBEGIN_EVENT_TABLE(VIIFrame, wxFrame)
 	//EVT_MENU(XRCID("ID_REFRESH"),MyFrame::refreshSurface)
 	EVT_MENU(XRCID("ID_CIRCUMFERENCE"),VIIFrame::circumference)
 	EVT_MENU(XRCID("ID_CALCULATE_VII"),VIIFrame::calculateVII)
-	EVT_LISTBOX(2000,VIIFrame::OnListItemChanged)
+	EVT_LISTBOX(ID_LIST_BOX,VIIFrame::OnListItemChanged)
+	//COLOR_CHANGE_EVT(ID_COLOR_LEGEND,VIIFrame::OnColorChanged)
 	//EVT_LEFT_DCLICK(VIIFrame::InLeftDClickLegend)
 	//EVT_CLOSE(VIIFrame::OnClose)
 wxEND_EVENT_TABLE()

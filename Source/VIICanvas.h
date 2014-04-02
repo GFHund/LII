@@ -16,6 +16,7 @@ private:
 	bool mLeftClicked;
 	bool mRightClicked;
 	wxPoint mStartPoint;
+	Vector3 mMaxColor,mMinColor;
 	
 	void Render();
 	void changeProjectionMode(bool perspective);
@@ -27,5 +28,6 @@ public:
 	void mouseEvent(wxMouseEvent& event);
 	void resize(wxSizeEvent& event);
 	void activateEdges(bool on);
+	void setColor(Vector3 maxColor,Vector3 minColor);
 	DECLARE_EVENT_TABLE()
 };

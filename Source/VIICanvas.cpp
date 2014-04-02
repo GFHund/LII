@@ -87,7 +87,8 @@ void VIICanvas::Render()
 				dataB = face->getB()->getMetaData(curMetaDataId);
 				dataC = face->getC()->getMetaData(curMetaDataId);
 				
-				Vector3 color1(0,0,0),color2(1,0,0);
+				Vector3 color1 = mMinColor;
+				Vector3 color2 = mMaxColor - mMinColor;//(1,0,0);
 				Vector3 colorVecA = color1 + color2 * ((dataA.second - minValue)/deltaMinMaxValue);
 				Vector3 colorVecB = color1 + color2 * ((dataB.second - minValue)/deltaMinMaxValue);
 				Vector3 colorVecC = color1 + color2 * ((dataC.second - minValue)/deltaMinMaxValue);
@@ -169,6 +170,8 @@ VIICanvas::VIICanvas(wxWindow* parent,int* args,wxWindowID id,wxSize size)
 	this->mRightClicked = false;
 	this->mStartPoint = wxPoint(0,0);
 	this->mDistanceOrigin = 4;
+	this->mMaxColor = Vector3(1,0,0);
+	this->mMinColor = Vector3(0,0,0);
 	changeProjectionMode(true);
 }
 void VIICanvas::Paintit(wxPaintEvent& event)
@@ -243,6 +246,13 @@ void VIICanvas::resize(wxSizeEvent& event)
 	mWidth = size.GetWidth();
 	mHeight = size.GetHeight();
 	changeProjectionMode(true);
+}
+
+void VIICanvas::setColor(Vector3 maxColor,Vector3 minColor)
+{
+	this->mMaxColor = maxColor;
+	this->mMinColor = minColor;
+	Refresh();
 }
 
 void VIICanvas::activateEdges(bool on)

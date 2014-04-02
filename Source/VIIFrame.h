@@ -23,6 +23,13 @@
 	wxGauge* processBar;
 	//wxMenuBar* menubar;
 	//wxMenuItem* turnEdges;
+	
+	enum
+	{
+		ID_CANVAS = 1945,
+		ID_LIST_BOX = 2000,
+		ID_COLOR_LEGEND = 2001
+	};
  
 	void quitProgram();
 	void setLegend(float minValue,float maxValue,Vector3 minColor,Vector3 maxColor);
@@ -37,6 +44,8 @@
 	void circumference     (wxCommandEvent& event);
 	void calculateVII      (wxCommandEvent& event);	
 	void OnListItemChanged (wxCommandEvent& event);
+	void OnColorChanged    (colorChangeEvent& event);
+	
 	void InLeftDClickLegend(wxMouseEvent& event);
 	void OnClose           (wxCloseEvent& event);
 	

@@ -62,7 +62,12 @@ void colorLegend::OnLeftDClick(wxMouseEvent& event)
 	triggerEvent.setNewMaxColor(colorMax);
 	triggerEvent.setNewMinColor(colorMin);
 	
-	ProcessWindowEvent(triggerEvent);
+	bool eventProceeded = ProcessWindowEvent(triggerEvent);
+	if(!eventProceeded)
+	{
+		wxMessageBox( "Sorry no Event triggert",
+				   "double Click event triggert", wxOK | wxICON_INFORMATION );
+	}
 	
 	mMinColor = colorMin;
 	mMaxColor = colorMax;

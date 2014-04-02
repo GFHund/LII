@@ -15,8 +15,12 @@ public:
 	void setNewMaxColor(Vector3 newColor);
 	void setNewMinColor(Vector3 newColor);
 };
-
 wxDEFINE_EVENT(COLOR_CHANGE_EVT,colorChangeEvent);
+//wxDECLARE_EVENT(COLOR_CHANGE_EVT,colorChangeEvent);
 
-#define colorChangeEventHandler(func) (&func)
-#define COLOR_CHANGE_EVT(id,frame) wx__DECLARE_EVT1(COLOR_CHANGE_EVT,id,colorChangeEventHandler(func))
+typedef void (wxEvtHandler::*colorChangeEventHandler)(colorChangeEvent&);
+#define colorChangeEventHandler(func) wxEVENT_HANDLER_CAST(colorChangeEventHandler,func)
+//#define colorChangeEventHandler(func) (&func)
+#define COLOR_CHANGE_EVT(id,func) wx__DECLARE_EVT1(COLOR_CHANGE_EVT,id,colorChangeEventHandler(func))
+
+//#define COLOR_CHANGE_EVT(id,func) DECLARE_EVENT_TABLE_ENTRY(COLOR_CHANGE_EVT,id,),
