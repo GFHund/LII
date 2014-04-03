@@ -34,9 +34,12 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	
 	SetSizerAndFit(boxSizer);
 	
-	wxStatusBar* statusBar = CreateStatusBar();
+	//wxStatusBar* statusBar = CreateStatusBar();
+	//statusBar->SetFieldsCount(2);
 	//SetStatusText("Wilkommen VII");
-	processBar = new wxGauge(statusBar,wxID_ANY,100);
+	//processBar = new wxGauge(statusBar,wxID_ANY,100);
+	VIIStatusBar* statusBar = new VIIStatusBar(this);
+	SetStatusBar(statusBar);
 }
 
 

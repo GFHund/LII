@@ -11,6 +11,7 @@
 #include "MeshLoader.h"
 #include "MeshManager.h"
 #include "colorLegend.h"
+#include "VIIStatusBar.h"
 
  class VIIFrame: public wxFrame
  {
