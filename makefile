@@ -5,6 +5,7 @@ COMPILER = g++
 #INCLUDE = -I/usr/local/lib/wx/include/msw-unicod-3.0 -I/usr/local/include/wx-3.0 -D_LARGEFILE_SOURCE=unknown -DWXUSINGDLL -DL__WXMSW__
 INCLUDE = -I/usr/local/lib/wx/include/msw-unicode-3.0 -I/usr/local/include/wx-3.0 -D_LARGEFILE_SOURCE=unknown -DWXUSINGDLL -D__WXMSW__
 
+CXXFLAGS = -std=c++0x
 LDFLAG = -lopengl32 -lglu32
 
 WXLIBS = $(shell wx-config --libs) $(shell wx-config --optional-libs gl)
@@ -16,10 +17,10 @@ WXINCLUDE = $(shell wx-config --cxxflags)
 
 #STATICLIBS = /usr/local/lib/libwx_baseu-3.0.dll.a /usr/local/lib/libwx_mswu_core-3.0.dll.a /usr/local/lib/libwx_mswu_gl-3.0.dll.a
 
-OBJECTS =  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/main.o Source/VIICanvas.o \
-		Source/Face.o Source/Vector3.o Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o \
-		Source/VIIFrame.o Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o \
-		Source/VIIStatusBar.o
+OBJECTS = Source/main.o Source/VIIFrame.o Source/VIIStatusBar.o Source/VIICanvas.o \
+		  Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o \
+		  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/Face.o Source/Vector3.o \
+		  Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o Source/MeshObserver.o
 
 #OBJECTS = Source/main.o 
 #Source/VIICanvas.o
@@ -52,6 +53,15 @@ Source/minMaxColorDlg.o: Source/minMaxColorDlg.h Source/minMaxColorDlg.cpp
 Source/VIIStatusBar.o: Source/VIIStatusBar.h Source/VIIStatusBar.cpp
 	$(COMPILER) -c -o Source/VIIStatusBar.o $(WXINCLUDE) Source/VIIStatusBar.cpp
 	
+Source/MeshObserver.o: Source/MeshObserver.h Source/MeshObserver.cpp
+	$(COMPILER) -c -o Source/MeshObserver.o $(WXINCLUDE) Source/MeshObserver.cpp
+
+Source/MeshManager.o:Source/MeshManager.h Source/MeshManager.cpp
+	$(COMPILER) -c -o $@ $(WXINCLUDE) Source/MeshManager.cpp
+
+#%.o: %.cpp
+#	$(CXX) -c $(CXXFLAGS) $(WXINCLUDE) $< -o $@
+#	$(CXX) -g -c $(CXXFLAGS) $< -o $@	
 	
 #alternate: 
 #	$(COMPILER) -oVII.exe Source/main.cpp  $(LDFLAG)

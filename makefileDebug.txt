@@ -6,9 +6,10 @@ LDFLAG = -lopengl32 -lglu32
 WXLIBS = $(shell wx-config --libs) $(shell wx-config --optional-libs gl)
 WXINCLUDE = $(shell wx-config --cxxflags)
 
-OBJECTS =  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/main.o Source/VIICanvas.o \
-		Source/Face.o Source/Vector3.o Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o \
-		Source/VIIFrame.o Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o
+OBJECTS = Source/main.o Source/VIIFrame.o Source/VIIStatusBar.o Source/VIICanvas.o \
+		  Source/colorLegend.o Source/colorChangeEvent.o Source/minMaxColorDlg.o \
+		  Source/MeshManager.o Source/Mesh.o Source/Vertex.o Source/Face.o Source/Vector3.o \
+		  Source/loadObjFile.o Source/loadPlyFile.o Source/MeshLoader.o Source/MeshObserver.o
 
 debug: $(OBJECTS)
 	$(COMPILER) -g -o VIIDebug $(OBJECTS) $(WXLIBS) $(LDFLAG)
@@ -31,6 +32,15 @@ Source/colorChangeEvent.o: Source/colorChangeEvent.h Source/colorChangeEvent.cpp
 	
 Source/minMaxColorDlg.o: Source/minMaxColorDlg.h Source/minMaxColorDlg.cpp
 	$(COMPILER) -c -g -o Source/minMaxColorDlg.o $(WXINCLUDE) Source/minMaxColorDlg.cpp
+	
+Source/VIIStatusBar.o: Source/VIIStatusBar.h Source/VIIStatusBar.cpp
+	$(COMPILER) -c -g -o Source/VIIStatusBar.o $(WXINCLUDE) Source/VIIStatusBar.cpp
+	
+Source/MeshObserver.o: Source/MeshObserver.h Source/MeshObserver.cpp
+	$(COMPILER) -c -g -o Source/MeshObserver.o $(WXINCLUDE) Source/MeshObserver.cpp
+
+Source/MeshManager.o:Source/MeshManager.h Source/MeshManager.cpp
+	$(COMPILER) -c -g -o $@ $(WXINCLUDE) Source/MeshManager.cpp
 	
 %.o: %.cpp
 	$(CXX) -g -c $(CXXFLAGS) $< -o $@

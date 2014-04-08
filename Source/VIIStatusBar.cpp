@@ -27,6 +27,15 @@ void VIIStatusBar::OnSize(wxSizeEvent& event)
 	event.Skip();
 }
 
+void VIIStatusBar::SetProcessBarValue(int value)
+{
+	if(value < 0 || value > processBar->GetRange())
+	{
+		return;
+	}
+	processBar->SetValue(value);
+}
+
 BEGIN_EVENT_TABLE(VIIStatusBar, wxStatusBar)
     EVT_SIZE(VIIStatusBar::OnSize)
 END_EVENT_TABLE()

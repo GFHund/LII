@@ -1,4 +1,47 @@
 #include "Mesh.h"
+#include <string>
+
+
+//wegen einem Bug im mingw wird dies verwendet.
+#include <sstream>
+namespace patch
+{
+	template <typename T> std::string to_string(const T& n)
+	{
+		std::ostringstream stm;
+		stm << n;
+		return stm.str();
+	}
+}
+
+/*
+std::ostream& operator <<(std::ostream& input,const Mesh& mesh)
+{
+	int verticesCount = mesh.getVerticesCount();
+	int facesCount = mesh.getFacesCount();
+	return (input << "[Mesh:Vertices Count:"<< verticesCount <<
+					 " Faces Count:" << facesCount << "]");
+}
+*/
+
+void Mesh::setProcessValue(int value)
+{
+	this->mProcessPercentage = value;
+	for(std::set<observer*>::iterator i = this->mObservers.begin();i!=this->mObservers.end();i++)
+	{
+		//(*i)->setPercentageProcess(value);
+		(*i)->update();
+	}
+}
+void Mesh::setProcessText(std::string text)
+{
+	this->mProcessMessage = text;
+	for(std::set<observer*>::iterator i = this->mObservers.begin();i!=this->mObservers.end();i++)
+	{
+		//(*i)->setStatusText(text);
+		(*i)->update();
+	}
+}
 
 Mesh::Mesh(std::set<Vertex*> vertices,std::set<Face*> faces)
 {
@@ -30,6 +73,15 @@ std::set<Vertex*> Mesh::getVertices()
 	return this->mVertices;
 }
 
+int Mesh::getFacesCount()
+{
+	return this->mFaces.size();
+}
+int Mesh::getVerticesCount()
+{
+	return this->mVertices.size();
+}
+
 int Mesh::getCurMetaDataId()
 {
 	return this->mCurMetaId;
@@ -37,6 +89,19 @@ int Mesh::getCurMetaDataId()
 void Mesh::setCurMetaDataId(int id)
 {
 	this->mCurMetaId = id;
+}
+
+void Mesh::addMeshObserver(observer* observer)
+{
+	this->mObservers.insert(observer);
+}
+int Mesh::getProcessValue()
+{
+	return this->mProcessPercentage;
+}
+std::string Mesh::getProcessText()
+{
+	return this->mProcessMessage;
 }
 
 void Mesh::viiRelatedFaces(Vertex* point,
@@ -263,6 +328,10 @@ void Mesh::calculateCircumferenceSmallCircle(int id,float radius)
 {
 	std::set<Face*> catA,catB,catC;
 	std::set<Vertex*> vertices = getVertices();
+	
+	//std::ofstream out;
+	//out.
+	
 	for(std::set<Vertex*>::iterator i = vertices.begin();i!=vertices.end();i++)
 	{
 		Vertex* vertex = *i;
@@ -299,6 +368,7 @@ void Mesh::calculateCircumferenceSmallCircle(int id,float radius)
 			Vector3 vec1 = *(intersectionPoints.begin());
 			Vector3 vec2 = *(intersectionPoints.rbegin());
 			Vector3 diff = vec1 - vec2;
+			//std::cout << diff.getLength() << std::endl;
 			circumference += diff.getLength();
 		}
 		
@@ -331,10 +401,15 @@ void Mesh::calculateCircumferenceSmallCircle(int id,float radius)
 			Vector3 vec1 = *(intersectionPoints.begin());
 			Vector3 vec2 = *(intersectionPoints.rbegin());
 			Vector3 diff = vec1 - vec2;
+			//std::cout << diff.getLength() << std::endl;
 			circumference += diff.getLength();
 		}
 		
-		vertex->setMetaData(std::pair<std::string,float>(std::string("Circumference"),circumference),id);
+		std::string name = "Circumference r=";
+		name += patch::to_string(radius);
+		
+		//vertex->setMetaData(std::pair<std::string,float>(std::string("Circumference"),circumference),id);
+		vertex->setMetaData(std::pair<std::string,float>(name,circumference),id);
 		
 		catA.clear();
 		catB.clear();
@@ -349,7 +424,7 @@ void Mesh::calculateVII(float radius)
 	for(std::set<Vertex*>::iterator j=this->mVertices.begin();j!=this->mVertices.end();j++)
 	{
 		Vertex* vertex = *j;
-		float Br = (4/3)*M_PI*radius;  
+		float Br = (4/3)*PI*radius;  
 		float Vl = 0.0f;
 		float Vp = 0.0f;	
 		std::set<Face*> catA,catB,catC;
@@ -378,3 +453,5 @@ void Mesh::calculateVII(float radius)
 		float volumeIntegralInvariant = Vl+Vp+(Br/2);
 	}
 }
+
+

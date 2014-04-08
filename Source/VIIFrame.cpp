@@ -1,11 +1,13 @@
 #include "VIIFrame.h"
+//#include <limits.h>
+#include <float.h>
 
 VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 {
 	wxXmlResource::Get()->LoadFrame(this,NULL,"VIIFrame");
 	//menubar = wxXmlResource::Get()->LoadMenuBar("m_menubar1");
 	
-	wxPanel* panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(700,600));
+	wxPanel* panel = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(750,600));
 	
 	int args[] = {WX_GL_RGBA,WX_GL_DOUBLEBUFFER,WX_GL_DEPTH_SIZE,16,0};
 	//viiCanvas = new VIICanvas(this,args,1945,wxSize(500,500));
@@ -16,11 +18,11 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	//boxSizer->Add(viiCanvas,1,wxEXPAND);
 	
 	
-	this->mListBox = new wxListBox(panel,ID_LIST_BOX,wxDefaultPosition,wxSize(100,100));
+	this->mListBox = new wxListBox(panel,ID_LIST_BOX,wxDefaultPosition,wxSize(150,100));
 	//wxListBox* listBox = new wxListBox(this,2000,wxDefaultPosition,wxSize(100,100));
 	//boxSizer->Add(listBox,0,wxALIGN_RIGHT);
 	
-	legende = new colorLegend(panel,ID_COLOR_LEGEND,0,10,Vector3(0,0,0),Vector3(1,0,0),wxDefaultPosition,wxSize(100,500));
+	mLegend = new colorLegend(panel,ID_COLOR_LEGEND,0,10,Vector3(0,0,0),Vector3(1,0,0),wxDefaultPosition,wxSize(100,500));
 	//COLOR_CHANGE_EVT(ID_COLOR_LEGEND,VIIFrame::OnColorChanged)
 	Bind(COLOR_CHANGE_EVT,&VIIFrame::OnColorChanged,this,ID_COLOR_LEGEND);
 	
@@ -28,7 +30,7 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	mListBox->InsertItems(1,&noneItem,0);
 	
 	boxSizer->Add(mViiCanvas);
-	boxSizer->Add(legende);
+	boxSizer->Add(mLegend);
 	boxSizer->Add(mListBox);
 	
 	
@@ -39,6 +41,12 @@ VIIFrame::VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size
 	//SetStatusText("Wilkommen VII");
 	//processBar = new wxGauge(statusBar,wxID_ANY,100);
 	VIIStatusBar* statusBar = new VIIStatusBar(this);
+	
+	this->mObserver = new meshObserver(statusBar);
+	
+	MeshManager* manager = MeshManager::getSingleton();
+	manager->addObserver(this->mObserver);
+	
 	SetStatusBar(statusBar);
 }
 
@@ -80,6 +88,7 @@ void VIIFrame::OnOpen(wxCommandEvent& event)
 	}
 	
 	wxString Path = openFileDialog.GetPath();
+	/*
 	MeshLoader loader;
 	Mesh* mesh = loader.loadMeshFile(Path.ToStdString());
 	if(mesh == NULL)
@@ -89,6 +98,20 @@ void VIIFrame::OnOpen(wxCommandEvent& event)
 	}
 	MeshManager* manager = MeshManager::getSingleton();
 	manager->addMesh(mesh);
+	*/
+	MeshManager* manager = MeshManager::getSingleton();
+	Mesh* mesh = manager->createMeshFromFile(Path.ToStdString());
+	if(mesh == NULL)
+	{
+		wxLogMessage("Cannot Load File");
+		return;
+	}
+	else
+	{
+		manager->setActiveMesh(mesh);
+		mesh->addMeshObserver(this->mObserver);
+	}
+	
 	Refresh();
 }
  /*
@@ -132,6 +155,7 @@ void VIIFrame::TurnEdges(wxCommandEvent& event)
  
 void VIIFrame::createFlatSurface(wxCommandEvent& event)
 {
+	/*
 	int numVert = 10;
 
 	MeshManager* manager = MeshManager::getSingleton();
@@ -175,7 +199,7 @@ void VIIFrame::createFlatSurface(wxCommandEvent& event)
 						"\tB:" << B->getPosition() <<
 						"\tC:" << C->getPosition() <<
 						"\tD:" << D->getPosition() <<std::endl;
-			*/
+			* /
 			
 			Face* fA = new Face(A,B,C);
 			Face* fB = new Face(C,A,D);
@@ -188,6 +212,13 @@ void VIIFrame::createFlatSurface(wxCommandEvent& event)
 	
 	Mesh* mesh = new Mesh(vertices,faces);
 	manager->addMesh(mesh);
+	*/
+	
+	MeshManager* manager = MeshManager::getSingleton();
+	Mesh* mesh = manager->createFlatMesh(10,10);
+	//std::cout << &mesh << std::endl;
+	manager->setActiveMesh(mesh);
+	mesh->addMeshObserver(this->mObserver);
 	Refresh();
 	//std::cout << "Update" << std::endl;
 	//Update();
@@ -195,7 +226,8 @@ void VIIFrame::createFlatSurface(wxCommandEvent& event)
 
 void VIIFrame::createCube(wxCommandEvent& event)
 {
-	MeshManager* manager = MeshManager::getSingleton();
+	
+	/*
 	std::set<Vertex*> vertices;
 	std::set<Face*> faces;
 	Vertex* vertice[8];
@@ -248,6 +280,12 @@ void VIIFrame::createCube(wxCommandEvent& event)
 	}
 	Mesh* mesh = new Mesh(vertices,faces);
 	manager->addMesh(mesh);
+	*/
+	MeshManager* manager = MeshManager::getSingleton();
+	Mesh* mesh = manager->createCubeMesh(1);
+	manager->setActiveMesh(mesh);
+	//	  addMeshObserver
+	mesh->addMeshObserver(this->mObserver);
 	Refresh(false);
 	//Update();
 }
@@ -301,8 +339,32 @@ void VIIFrame::OnListItemChanged(wxCommandEvent& event)
 		itemCount--;
 		int index = event.GetSelection();
 		wxString text = event.GetString();
+		int realIndex = itemCount - index;
 		Mesh* mesh = MeshManager::getSingleton()->getActiveMesh();
-		mesh->setCurMetaDataId(itemCount - index);
+		//mesh->setCurMetaDataId(itemCount - index);
+		mesh->setCurMetaDataId(realIndex);
+		if(realIndex != 0)
+		{
+			std::set<Vertex*> vertices = mesh->getVertices();
+			float minValue = FLT_MAX;
+			float maxValue = FLT_MIN;
+			for(std::set<Vertex*>::iterator i=vertices.begin();i!=vertices.end();i++)
+			{
+				Vertex* vert = *i;
+				std::pair<std::string,float> data = vert->getMetaData(realIndex);
+				if(data.second < minValue)
+				{
+					minValue = data.second;
+				}
+				if(data.second > maxValue)
+				{
+					maxValue = data.second;
+				}
+			}
+			
+			this->mLegend->setMaxValue(maxValue);
+			this->mLegend->setMinValue(minValue);
+		}
 		Refresh(false);
 	}
 }

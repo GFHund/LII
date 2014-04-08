@@ -1,3 +1,6 @@
+#ifndef __MESH_LOADER__
+#define __MESH_LOADER__
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -14,3 +17,4 @@ public:
 
 	Mesh* loadMeshFile(std::string filename);
 };
+#endif

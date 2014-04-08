@@ -7,11 +7,15 @@
 
 #include <vector>
 
-#include "VIICanvas.h"
-#include "MeshLoader.h"
-#include "MeshManager.h"
-#include "colorLegend.h"
+//GUI Klassen
 #include "VIIStatusBar.h"
+#include "VIICanvas.h"
+#include "colorLegend.h"
+
+//Mesh Klassen
+#include "MeshManager.h" //Mesh.h->meshObserver.h
+//#include "Mesh.h"
+//#include "meshObserver.h"
 
  class VIIFrame: public wxFrame
  {
@@ -19,9 +23,10 @@
 	VIIFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
  private:    
 	VIICanvas* mViiCanvas;
-	colorLegend* legende;
+	colorLegend* mLegend;//legende;
 	wxListBox* mListBox;
-	wxGauge* processBar;
+	//wxGauge* processBar;
+	meshObserver* mObserver;
 	//wxMenuBar* menubar;
 	//wxMenuItem* turnEdges;
 	

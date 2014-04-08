@@ -1,3 +1,6 @@
+#ifndef __COLOR_LEGEND__
+#define __COLOR_LEGEND__
+
 #include <wx/panel.h>
 #include <wx/dcclient.h>
 #include <wx/msgdlg.h>
@@ -31,3 +34,4 @@ public:
 	void setMinValue(float minValue);
 	
 };
+#endif
